@@ -178,10 +178,10 @@ async def open_game(interaction: discord.Interaction, game_type: app_commands.Ch
     
     game_name = "💣 終極密碼" if game_type.value == 'password' else "🕵️ 誰是臥底 (單票制)"
     
+    # 隱藏了 God Mode 的提示
     await interaction.response.send_message(
         f"📢 **{game_name}** 準備開啟！\n"
         f"想玩的請輸入 `/join` 或打 `+1`\n"
-        f"主持人可輸入 `/god_mode` 開啟上帝視角\n"
         f"人數到齊後主持人請用 `/start` 開始"
     )
 
@@ -199,7 +199,7 @@ async def god_mode(interaction: discord.Interaction):
     if interaction.user != current_game.host:
         return await interaction.response.send_message("❌ 只有主持人可以開啟。", ephemeral=True)
     current_game.god_mode = True
-    await interaction.response.send_message("👁️ 上帝模式已開啟。", ephemeral=True)
+    await interaction.response.send_message("👁️ 上帝模式已啟用 (遊戲開始時生效)。", ephemeral=True)
 
 # --- 第二階段：開始遊戲 ---
 
@@ -229,13 +229,17 @@ async def start(interaction: discord.Interaction):
         game_channel = await guild.create_text_channel(channel_name, overwrites=overwrites)
         current_game.game_channel = game_channel
 
-        god_overwrites = {
-            guild.default_role: discord.PermissionOverwrite(read_messages=False),
-            guild.me: discord.PermissionOverwrite(read_messages=True),
-            current_game.host: discord.PermissionOverwrite(read_messages=True)
-        }
-        god_channel = await guild.create_text_channel(f"上帝視角-{random.randint(1000,9999)}", overwrites=god_overwrites)
-        current_game.god_channel = god_channel
+        # 只有在啟用 god_mode 時才建立上帝視角頻道
+        if current_game.god_mode:
+            god_overwrites = {
+                guild.default_role: discord.PermissionOverwrite(read_messages=False),
+                guild.me: discord.PermissionOverwrite(read_messages=True),
+                current_game.host: discord.PermissionOverwrite(read_messages=True)
+            }
+            god_channel = await guild.create_text_channel(f"上帝視角-{random.randint(1000,9999)}", overwrites=god_overwrites)
+            current_game.god_channel = god_channel
+        else:
+            current_game.god_channel = None
             
     except Exception as e:
         print(f"Error: {e}")
@@ -443,7 +447,13 @@ async def process_voting_results_final():
                 current_game.phase = GamePhase.GAME_OVER
                 return 
             else:
-                await current_game.game_channel.send(f"❌ **猜錯了！** (正確是 `{current_game.civilian_word}`)\n💀 白板正式出局。")
+                # 修正：如果臥底還活著，不公佈答案
+                spy_alive = current_game.spy_player in current_game.alive_players
+                if spy_alive:
+                    await current_game.game_channel.send(f"❌ **猜錯了！**\n💀 白板正式出局。\n(為防止劇透，暫不公佈平民詞)")
+                else:
+                    await current_game.game_channel.send(f"❌ **猜錯了！** (正確是 `{current_game.civilian_word}`)\n💀 白板正式出局。")
+
         except asyncio.TimeoutError:
             await current_game.game_channel.send("⏰ **時間到！** 白板放棄掙扎。\n💀 白板正式出局。")
             
@@ -473,7 +483,7 @@ async def check_win_condition(from_voting=False):
     
     # 1. 平民勝利：壞人全滅
     if spy_dead and wb_dead:
-        await current_game.game_channel.send("🎉 **臥底和白板都死了！**\n🏆 **平民陣營獲勝！**")
+        await current_game.game_channel.send(f"🎉 **臥底和白板都死了！**\n平民詞：`{current_game.civilian_word}`\n臥底詞：`{current_game.spy_word}`\n🏆 **平民陣營獲勝！**")
         current_game.phase = GamePhase.GAME_OVER
         return
 
@@ -490,6 +500,8 @@ async def check_win_condition(from_voting=False):
             await current_game.game_channel.send("🏆 **白板存活到最後，白板獲勝！**")
         else:
             await current_game.game_channel.send("🏆 **臥底獲勝！**")
+        
+        await current_game.game_channel.send(f"平民詞：`{current_game.civilian_word}`\n臥底詞：`{current_game.spy_word}`")
         current_game.phase = GamePhase.GAME_OVER
         return
 
@@ -498,7 +510,8 @@ async def check_win_condition(from_voting=False):
         current_game.phase = GamePhase.SPEAKING
         current_game.turn_index = 0 
         await current_game.game_channel.send("🔄 **遊戲繼續！** 壞人尚未全滅。")
-        await current_game.game_channel.send(f"現在輪到 {current_game.alive_players[0].mention} 發言。")
+        if current_game.alive_players:
+            await current_game.game_channel.send(f"現在輪到 {current_game.alive_players[0].mention} 發言。")
 
 # --- 搶答與踢人 ---
 
@@ -518,19 +531,25 @@ async def answer(interaction: discord.Interaction, guess: str):
         await current_game.game_channel.send(f"🎉 **猜對了！** {role} 猜到了平民詞！\n🏆 **壞人陣營獲勝！**")
         current_game.phase = GamePhase.GAME_OVER
     else:
-        await current_game.game_channel.send(f"🚫 猜錯！{interaction.user.mention} 自殺出局。")
+        # 修正：猜錯不公佈答案，防止劇透
+        await current_game.game_channel.send(f"🚫 **猜錯！** {interaction.user.mention} 自殺出局。")
         current_game.round_losers.append(interaction.user)
         current_game.alive_players.remove(interaction.user)
         
         if interaction.user in current_game.votes:
             del current_game.votes[interaction.user]
         
+        # 檢查是否結束，如果沒結束，需要確保遊戲流程繼續
         await check_win_condition(from_voting=False)
         
-        # 處理回合轉移
-        if current_game.phase == GamePhase.SPEAKING and current_game.phase != GamePhase.GAME_OVER:
-             if current_game.turn_index >= len(current_game.alive_players):
+        # 修正：如果遊戲沒結束，需要明確提示下一位，防止卡住
+        if current_game.phase != GamePhase.GAME_OVER:
+            if current_game.turn_index >= len(current_game.alive_players):
                  current_game.turn_index = 0
+            
+            # 提示下一位發言者
+            next_player = current_game.alive_players[current_game.turn_index]
+            await current_game.game_channel.send(f"🔄 遊戲繼續！下一位發言：{next_player.mention}")
 
 @bot.tree.command(name="kick_player", description="踢人")
 async def kick_player(interaction: discord.Interaction, target: discord.Member):
