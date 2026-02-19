@@ -18,7 +18,6 @@ def home():
     return "I'm alive! The bot is running."
 
 def run():
-    # 設定 Port 為 8080，這是雲端平台常用的 Port
     app.run(host='0.0.0.0', port=8080)
 
 def keep_alive():
@@ -29,7 +28,6 @@ def keep_alive():
 # 🤖 機器人主程式
 # ==========================================
 
-# 設定 Intent
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
@@ -38,66 +36,35 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 # --- 詞庫設定 (全域變數) ---
 SPY_WORDS_DATA = [
-    # ==============================
-    # 🍔 美食與飲品篇
-    # ==============================
-    ("麥當勞", "肯德基"), ("必勝客", "達美樂"), ("星巴克", "路易莎"),
-    ("珍珠奶茶", "波霸奶茶"), ("可口可樂", "百事可樂"), ("雪碧", "七喜"),
-    ("滷肉飯", "肉燥飯"), ("水餃", "鍋貼"), ("小籠包", "生煎包"),
-    ("火鍋", "壽喜燒"), ("薑母鴨", "羊肉爐"), ("麻辣鍋", "臭臭鍋"),
-    ("牛肉麵", "陽春麵"), ("義大利麵", "拉麵"), ("烏龍麵", "米苔目"),
-    ("布丁", "奶酪"), ("冰淇淋", "霜淇淋"), ("鳳梨酥", "蛋黃酥"),
-    ("紅豆餅", "雞蛋糕"), ("雞排", "鹹酥雞"), ("薯條", "薯餅"),
-    ("奇異果", "火龍果"), ("柳丁", "橘子"), ("檸檬", "萊姆"),
-    ("拿鐵", "卡布奇諾"), ("紅茶", "綠茶"), ("豆漿", "米漿"),
-    ("布朗尼", "提拉米蘇"), ("泡麵", "乾拌麵"), ("自助餐", "便當"),
+    # 🔥 陷阱題：外觀或動作相似，但後果不同
+    ("牙刷", "馬桶刷"), ("雨傘", "降落傘"), ("口香糖", "保險套"),
+    ("內褲", "尿布"), ("救生圈", "甜甜圈"), ("麥克風", "霜淇淋"),
+    ("香水", "殺蟲劑"), ("唇膏", "印章"), ("手銬", "手鐲"),
 
-    # ==============================
-    # 📱 生活與科技篇
-    # ==============================
-    ("臉書", "IG"), ("Threads", "Twitter"),
-    ("LINE", "Messenger"), ("YouTube", "Netflix"), ("抖音", "Reels"),
-    ("iPhone", "Android"), ("筆電", "桌機"), ("平板", "手機"),
-    ("耳機", "喇叭"), ("滑鼠", "觸控板"), ("鍵盤", "打字機"),
-    ("眼鏡", "隱形眼鏡"), ("墨鏡", "3D眼鏡"), ("手錶", "手環"),
-    ("雨傘", "雨衣"), ("拖鞋", "涼鞋"), ("布鞋", "皮鞋"),
-    ("牙刷", "電動牙刷"), ("洗髮精", "沐浴乳"), ("毛巾", "浴巾"),
-    ("衛生紙", "濕紙巾"), ("棉被", "毛毯"), ("枕頭", "抱枕"),
-    ("機車", "電動車"), ("腳踏車", "滑板車"),
+    # 🧠 燒腦題：抽象概念與狀態
+    ("緣分", "巧合"), ("獎金", "薪水"), ("裸睡", "泡湯"),
+    ("自戀", "自信"), ("曖昧", "劈腿"), ("初戀", "前任"),
+    ("夢想", "幻想"), ("固執", "堅持"), ("小氣", "節儉"),
+    ("流浪", "旅遊"), ("整容", "化妝"), ("八卦", "新聞"),
 
-    # ==============================
-    # 🏫 地點與場所篇
-    # ==============================
-    ("7-11", "全家"), ("全聯", "家樂福"), ("好市多", "IKEA"),
-    ("百貨公司", "Outlet"), ("夜市", "菜市場"), ("電影院", "歌劇院"),
-    ("圖書館", "書店"), ("補習班", "學校"), ("幼稚園", "托兒所"),
-    ("健身房", "運動中心"), ("公園", "遊樂園"), ("動物園", "水族館"),
-    ("飯店", "民宿"), ("監獄", "看守所"), ("醫院", "診所"),
+    # 🍔 食物題：成分相似但地位不同
+    ("水餃", "小籠包"), ("生魚片", "壽司"), ("拿鐵", "奶茶"),
+    ("火鍋", "麻辣燙"), ("自助餐", "辦桌"), ("牛肉麵", "牛排"),
+    ("可樂", "醬油"), ("白酒", "米酒"), ("榴槤", "臭豆腐"),
 
-    # ==============================
-    # 🦸 人物與角色篇
-    # ==============================
-    ("鋼鐵人", "蝙蝠俠"), ("蜘蛛人", "超人"), ("美國隊長", "雷神索爾"),
-    ("哆啦A夢", "大雄"), ("蠟筆小新", "櫻桃小丸子"), ("海綿寶寶", "派大星"),
-    ("柯南", "福爾摩斯"), ("哈利波特", "魔戒"), ("皮卡丘", "伊布"),
-    ("YouTuber", "直播主"), ("藝人", "網紅"), ("歌手", "演員"),
-    ("警察", "保全"), ("醫生", "護士"), ("老師", "教授"),
-    ("班長", "風紀股長"), ("前男友", "前女友"), ("渣男", "暖男"),
-    ("總經理", "董事長"), ("房東", "房客"),
+    # 🦸 人物題：身分微妙差異
+    ("富二代", "暴發戶"), ("渣男", "中央空調"), ("女神", "女漢子"),
+    ("保全", "保鑣"), ("魔術師", "騙子"), ("總裁", "老闆"),
+    ("房東", "管家"), ("間諜", "狗仔"), ("駭客", "工程師"),
+    ("女朋友", "乾妹妹"), ("男朋友", "男閨蜜"), ("媽媽", "婆婆"),
 
-    # ==============================
-    # 🧠 抽象、狀態與行為篇
-    # ==============================
-    ("單身", "失戀"), ("初戀", "暗戀"), ("曖昧", "交往"),
-    ("結婚", "訂婚"), ("離婚", "分居"), ("懷孕", "變胖"),
-    ("自戀", "自信"), ("自大", "驕傲"), ("小氣", "節儉"),
-    ("固執", "堅持"), ("隨便", "隨和"), ("活潑", "過動"),
-    ("誠實", "老實"), ("說謊", "吹牛"), ("生氣", "暴怒"),
-    ("開心", "興奮"), ("難過", "憂鬱"), ("緊張", "焦慮"),
-    ("夢想", "幻想"), ("理想", "目標"), ("裸睡", "賴床"),
-    ("遲到", "早退"), ("翹課", "請假"), ("加班", "值班"),
-    ("中獎", "中籤")
+    # 🏠 生活與物品：容易混淆
+    ("鏡子", "相機"), ("枕頭", "布偶"), ("鉛筆", "眉筆"),
+    ("這裡", "那裡"), ("今天", "明天"), ("左邊", "右邊"),
+    ("臉書", "日記"), ("手機", "對講機"), ("眼鏡", "放大鏡"),
+    ("電梯", "手扶梯"), ("斑馬線", "起跑線"), ("監獄", "學校")
 ]
+
 
 # 遊戲狀態 Enum
 class GamePhase:
@@ -106,7 +73,10 @@ class GamePhase:
     VOTING = 2
     GAME_OVER = 3
     WAITING_FOR_HOST_INPUT = 4 
-    WHITEBOARD_GUESS = 5 
+    WHITEBOARD_GUESS = 5
+    # --- 狼人殺階段 ---
+    WEREWOLF_NIGHT = 10
+    WEREWOLF_DAY = 11
 
 # 遊戲狀態儲存
 class GameState:
@@ -121,6 +91,7 @@ class GameState:
         self.host = None
         self.game_channel = None
         self.god_channel = None
+        self.wolf_channel = None 
         self.phase = GamePhase.SETUP
         self.used_words = [] 
         self.reset_round_data()
@@ -135,10 +106,15 @@ class GameState:
         self.votes = {} 
         self.password_number = 0
         self.password_range = [1, 100]
+        # 臥底相關
         self.spy_player = None
         self.whiteboard_player = None 
         self.civilian_word = ""
         self.spy_word = ""
+        # 狼人殺相關
+        self.roles = {} 
+        self.night_actions = {"wolf_kill": None, "witch_save": False, "witch_poison": None}
+        self.witch_inventory = {"antidote": True, "poison": True}
 
 current_game = GameState()
 ALLOWED_CHANNEL_ID = 1472525156336275476 
@@ -150,7 +126,6 @@ async def on_ready():
     print('⚠️ 請務必在 Discord 頻道輸入 !sync 來載入指令！')
     print('-------------------------------------------')
 
-# --- 強制同步指令 ---
 @bot.command()
 async def sync(ctx):
     await ctx.send(f"🔄 正在同步指令...")
@@ -165,7 +140,8 @@ async def sync(ctx):
 @app_commands.describe(game_type="選擇遊戲類型")
 @app_commands.choices(game_type=[
     app_commands.Choice(name="終極密碼", value="password"),
-    app_commands.Choice(name="誰是臥底 (單票制)", value="spy")
+    app_commands.Choice(name="誰是臥底 (單票制)", value="spy"),
+    app_commands.Choice(name="狼人殺 (標準局)", value="werewolf")
 ])
 async def open_game(interaction: discord.Interaction, game_type: app_commands.Choice[str]):
     if interaction.channel_id != ALLOWED_CHANNEL_ID:
@@ -176,11 +152,14 @@ async def open_game(interaction: discord.Interaction, game_type: app_commands.Ch
     current_game.game_type = game_type.value
     current_game.host = interaction.user
     
-    game_name = "💣 終極密碼" if game_type.value == 'password' else "🕵️ 誰是臥底 (單票制)"
+    game_names = {
+        "password": "💣 終極密碼",
+        "spy": "🕵️ 誰是臥底 (單票制)",
+        "werewolf": "🐺 狼人殺 (標準局)"
+    }
     
-    # 隱藏了 God Mode 的提示
     await interaction.response.send_message(
-        f"📢 **{game_name}** 準備開啟！\n"
+        f"📢 **{game_names[game_type.value]}** 準備開啟！\n"
         f"想玩的請輸入 `/join` 或打 `+1`\n"
         f"人數到齊後主持人請用 `/start` 開始"
     )
@@ -208,7 +187,10 @@ async def start(interaction: discord.Interaction):
     if not current_game.is_lobby_open or interaction.user != current_game.host:
         return await interaction.response.send_message("❌ 你不是主持人或大廳未開啟。", ephemeral=True)
 
-    min_players = 4 if current_game.game_type == 'spy' else 2
+    min_players = 2
+    if current_game.game_type == 'spy': min_players = 4
+    if current_game.game_type == 'werewolf': min_players = 6 
+    
     if len(current_game.players) < min_players:
         return await interaction.response.send_message(f"⚠️ 人數不足！{current_game.game_type} 模式至少需要 {min_players} 人！", ephemeral=True)
 
@@ -229,7 +211,6 @@ async def start(interaction: discord.Interaction):
         game_channel = await guild.create_text_channel(channel_name, overwrites=overwrites)
         current_game.game_channel = game_channel
 
-        # 只有在啟用 god_mode 時才建立上帝視角頻道
         if current_game.god_mode:
             god_overwrites = {
                 guild.default_role: discord.PermissionOverwrite(read_messages=False),
@@ -240,6 +221,14 @@ async def start(interaction: discord.Interaction):
             current_game.god_channel = god_channel
         else:
             current_game.god_channel = None
+
+        if current_game.game_type == 'werewolf':
+            # 修正：不把主持人加入狼人頻道
+            wolf_overwrites = {
+                guild.default_role: discord.PermissionOverwrite(read_messages=False),
+                guild.me: discord.PermissionOverwrite(read_messages=True)
+            }
+            current_game.wolf_channel = await guild.create_text_channel(f"🐺狼人窩-{random.randint(1000,9999)}", overwrites=wolf_overwrites)
             
     except Exception as e:
         print(f"Error: {e}")
@@ -259,6 +248,8 @@ async def init_game_logic():
         await setup_password_game()
     elif current_game.game_type == 'spy':
         await setup_spy_game()
+    elif current_game.game_type == 'werewolf':
+        await setup_werewolf_game()
 
 async def setup_password_game():
     target = random.randint(1, 100)
@@ -269,12 +260,9 @@ async def setup_password_game():
 
 async def setup_spy_game():
     available_indices = [i for i in range(len(SPY_WORDS_DATA)) if i not in current_game.used_words]
-    
     if not available_indices:
         current_game.phase = GamePhase.WAITING_FOR_HOST_INPUT
         await current_game.game_channel.send("🔄 **內建詞庫已用完！**\n請主持人在 **上帝視角** 輸入 `平民詞 臥底詞`。")
-        if current_game.god_channel:
-            await current_game.god_channel.send("📝 **請輸入自訂題目！**\n格式：`蘋果 香蕉`")
         return
 
     selected_index = random.choice(available_indices)
@@ -286,10 +274,8 @@ async def start_spy_round(pair):
     current_game.phase = GamePhase.SPEAKING
     current_game.civilian_word = pair[0]
     current_game.spy_word = pair[1]
-
     spy = random.choice(current_game.alive_players)
     current_game.spy_player = spy
-    
     remaining = [p for p in current_game.alive_players if p != spy]
     whiteboard = random.choice(remaining)
     current_game.whiteboard_player = whiteboard
@@ -301,51 +287,236 @@ async def start_spy_round(pair):
 
     for p in current_game.alive_players:
         try:
-            if p == spy:
-                await p.send(f"🤫 你的身分是 **臥底**！\n你的詞彙是：**{current_game.spy_word}**\n(若猜到平民詞，可用 `/answer` 自爆搶答)")
-            elif p == whiteboard:
-                await p.send(f"⬜ 你的身分是 **白板**！\n你 **沒有詞彙**。請假裝你知道。\n(若猜到平民詞，可用 `/answer` 搶答)")
-            else:
-                await p.send(f"😇 你的身分是 **平民**。\n你的詞彙是：**{current_game.civilian_word}**")
-        except:
-            await current_game.game_channel.send(f"⚠️ 無法私訊 {p.mention}，請開啟私訊功能！")
+            if p == spy: await p.send(f"🤫 你的身分是 **臥底**！\n你的詞彙是：**{current_game.spy_word}**")
+            elif p == whiteboard: await p.send(f"⬜ 你的身分是 **白板**！\n你 **沒有詞彙**。")
+            else: await p.send(f"😇 你的身分是 **平民**。\n你的詞彙是：**{current_game.civilian_word}**")
+        except: pass
 
     msg = (f"🕵️ **誰是臥底 (單票制) 開始！**\n由 {current_game.alive_players[0].mention} 開始。\n"
-           f"🗣️ 發言：`/speak`\n🗳️ 投票：`/vote <玩家>` (每人一票，票高者死)")
+           f"🗣️ 發言：`/speak`\n🗳️ 投票：`/vote <玩家>`")
     await current_game.game_channel.send(msg)
 
-# --- 核心指令：發言 ---
+# --- 🐺 狼人殺邏輯 ---
+
+async def setup_werewolf_game():
+    players = current_game.alive_players
+    count = len(players)
+    
+    roles_list = []
+    if count < 9:
+        roles_list = ["狼人"]*2 + ["村民"]*2 + ["預言家", "女巫"]
+        while len(roles_list) < count: roles_list.append("村民")
+    else:
+        roles_list = ["狼人"]*3 + ["村民"]*3 + ["預言家", "女巫", "獵人"]
+        while len(roles_list) < count: roles_list.append("村民")
+        
+    random.shuffle(roles_list)
+    current_game.roles = {p: r for p, r in zip(players, roles_list)}
+    
+    wolves = [p for p, r in current_game.roles.items() if r == "狼人"]
+    
+    if current_game.wolf_channel:
+        for wolf in wolves:
+            await current_game.wolf_channel.set_permissions(wolf, read_messages=True, send_messages=True)
+
+    for p, role in current_game.roles.items():
+        try:
+            msg = f"📜 你的身分是：**{role}**"
+            if role == "狼人":
+                teammates = [w.display_name for w in wolves if w != p]
+                msg += f"\n你的隊友：{', '.join(teammates) if teammates else '無'}"
+                msg += f"\n請在 **{current_game.wolf_channel.mention}** 討論戰術。"
+            await p.send(msg)
+        except:
+            await current_game.game_channel.send(f"⚠️ 無法私訊 {p.mention}，請自行確認身分。")
+
+    if current_game.god_channel:
+        role_info = "\n".join([f"{p.display_name}: {r}" for p, r in current_game.roles.items()])
+        await current_game.god_channel.send(f"🐺 **狼人殺配置**\n{role_info}")
+
+    current_game.phase = GamePhase.WEREWOLF_NIGHT
+    await current_game.game_channel.send(
+        "🐺 **狼人殺遊戲開始！**\n"
+        "現在進入 **夜晚** 🌑\n"
+        "請主持人在所有動作完成後，輸入 `/next_phase` 進入白天。"
+    )
+    await start_night_phase()
+
+async def start_night_phase():
+    current_game.night_actions = {"wolf_kill": None, "witch_save": False, "witch_poison": None}
+    
+    await current_game.game_channel.set_permissions(current_game.game_channel.guild.default_role, send_messages=False)
+    for p in current_game.players:
+        await current_game.game_channel.set_permissions(p, send_messages=False)
+    
+    await current_game.game_channel.send("🌙 **天黑請閉眼**... 狼人請殺人，神職請行動。")
+    if current_game.wolf_channel:
+        await current_game.wolf_channel.send("🐺 **狼人請殺人**\n輸入 `/wolf_kill <玩家>` 選擇目標。")
+
+# --- 狼人殺指令 ---
+
+@bot.tree.command(name="next_phase", description="推進遊戲階段 (天黑/天亮)")
+async def next_phase(interaction: discord.Interaction):
+    if interaction.user != current_game.host: return await interaction.response.send_message("❌ 限主持人", ephemeral=True)
+    if current_game.game_type != 'werewolf': return await interaction.response.send_message("❌ 非狼人殺模式", ephemeral=True)
+
+    await interaction.response.defer()
+
+    if current_game.phase == GamePhase.WEREWOLF_NIGHT:
+        current_game.phase = GamePhase.WEREWOLF_DAY
+        
+        dead_players = []
+        wolf_target = current_game.night_actions["wolf_kill"]
+        
+        if wolf_target and current_game.night_actions["witch_save"]:
+            wolf_target = None 
+        
+        if wolf_target: dead_players.append(wolf_target)
+        
+        poison_target = current_game.night_actions["witch_poison"]
+        if poison_target: dead_players.append(poison_target)
+        
+        dead_names = []
+        for p in dead_players:
+            if p in current_game.alive_players:
+                current_game.alive_players.remove(p)
+                dead_names.append(p.display_name)
+        
+        for p in current_game.players:
+            await current_game.game_channel.set_permissions(p, send_messages=True)
+            
+        await current_game.game_channel.send("☀️ **天亮了！**")
+        if dead_names:
+            await current_game.game_channel.send(f"昨晚死亡的是：**{', '.join(dead_names)}**")
+        else:
+            await current_game.game_channel.send("昨晚是 **平安夜**！")
+            
+        await check_werewolf_win()
+        if current_game.phase != GamePhase.GAME_OVER:
+            await current_game.game_channel.send("🗣️ 請開始討論！\n討論結束後主持人請輸入 `/call_vote` 進行投票。")
+
+    elif current_game.phase == GamePhase.WEREWOLF_DAY:
+        current_game.phase = GamePhase.WEREWOLF_NIGHT
+        await start_night_phase()
+        await interaction.followup.send("🌑 進入夜晚。")
+
+@bot.tree.command(name="wolf_kill", description="狼人殺人 (僅限狼人頻道)")
+async def wolf_kill(interaction: discord.Interaction, target: discord.Member):
+    if current_game.wolf_channel and interaction.channel_id != current_game.wolf_channel.id:
+        return await interaction.response.send_message("❌ 只能在狼人頻道使用", ephemeral=True)
+    if current_game.phase != GamePhase.WEREWOLF_NIGHT:
+        return await interaction.response.send_message("❌ 現在不是夜晚", ephemeral=True)
+    
+    current_game.night_actions["wolf_kill"] = target
+    await interaction.response.send_message(f"🐺 狼人鎖定目標：**{target.display_name}**")
+    
+    if current_game.god_channel:
+        await current_game.god_channel.send(f"🔪 狼人想殺：{target.display_name}")
+
+    # 修正：自動私訊女巫
+    witch = None
+    for p, r in current_game.roles.items():
+        if r == "女巫" and p in current_game.alive_players:
+            witch = p
+            break
+    
+    if witch:
+        try:
+            await witch.send(f"🧪 **女巫請注意**！今晚狼人想殺：**{target.display_name}**\n你可以使用 `/witch_action action:使用解藥` 來救他。")
+        except:
+            if current_game.god_channel: await current_game.god_channel.send("⚠️ 無法私訊女巫 (可能關閉私訊)")
+
+@bot.tree.command(name="seer_check", description="預言家查驗 (僅限預言家)")
+async def seer_check(interaction: discord.Interaction, target: discord.Member):
+    if current_game.roles.get(interaction.user) != "預言家":
+        return await interaction.response.send_message("❌ 你不是預言家", ephemeral=True)
+    if current_game.phase != GamePhase.WEREWOLF_NIGHT:
+        return await interaction.response.send_message("❌ 天亮了不能查", ephemeral=True)
+
+    role = current_game.roles.get(target)
+    result = "🐺 狼人" if role == "狼人" else "😇 好人"
+    
+    await interaction.response.send_message(f"🔮 查驗結果：{target.display_name} 是 **{result}**", ephemeral=True)
+    if current_game.god_channel:
+        await current_game.god_channel.send(f"🔮 預言家查了 {target.display_name} -> {result}")
+
+@bot.tree.command(name="witch_action", description="女巫行動 (僅限女巫)")
+@app_commands.choices(action=[
+    app_commands.Choice(name="使用解藥", value="save"),
+    app_commands.Choice(name="使用毒藥", value="poison")
+])
+async def witch_action(interaction: discord.Interaction, action: app_commands.Choice[str], target: discord.Member = None):
+    if current_game.roles.get(interaction.user) != "女巫":
+        return await interaction.response.send_message("❌ 你不是女巫", ephemeral=True)
+    if current_game.phase != GamePhase.WEREWOLF_NIGHT:
+        return await interaction.response.send_message("❌ 天亮了不能用", ephemeral=True)
+
+    kill_target = current_game.night_actions.get("wolf_kill")
+
+    if action.value == "save":
+        if not current_game.witch_inventory["antidote"]:
+            return await interaction.response.send_message("❌ 解藥用光了", ephemeral=True)
+        if not kill_target:
+            return await interaction.response.send_message("❌ 狼人還沒殺人，無法救", ephemeral=True)
+        
+        current_game.night_actions["witch_save"] = True
+        current_game.witch_inventory["antidote"] = False
+        await interaction.response.send_message(f"🧪 你救了 {kill_target.display_name}", ephemeral=True)
+        if current_game.god_channel: await current_game.god_channel.send(f"🧪 女巫救了 {kill_target.display_name}")
+
+    elif action.value == "poison":
+        if not current_game.witch_inventory["poison"]:
+            return await interaction.response.send_message("❌ 毒藥用光了", ephemeral=True)
+        if not target:
+            return await interaction.response.send_message("⚠️ 請選擇毒殺對象", ephemeral=True)
+        
+        current_game.night_actions["witch_poison"] = target
+        current_game.witch_inventory["poison"] = False
+        await interaction.response.send_message(f"🧪 你毒死了 {target.display_name}", ephemeral=True)
+        if current_game.god_channel: await current_game.god_channel.send(f"🧪 女巫毒了 {target.display_name}")
+
+async def check_werewolf_win():
+    wolves = [p for p in current_game.alive_players if current_game.roles.get(p) == "狼人"]
+    villagers = [p for p in current_game.alive_players if current_game.roles.get(p) == "村民"]
+    gods = [p for p in current_game.alive_players if current_game.roles.get(p) in ["預言家", "女巫", "獵人"]]
+    
+    if not wolves:
+        await current_game.game_channel.send("🎉 **狼人全滅！好人陣營獲勝！**")
+        current_game.phase = GamePhase.GAME_OVER
+    elif not villagers or not gods: 
+        await current_game.game_channel.send("🎉 **屠邊成功！狼人陣營獲勝！**")
+        current_game.phase = GamePhase.GAME_OVER
+
+# --- 共用指令：發言與投票 ---
 
 @bot.tree.command(name="speak", description="輸入發言")
 async def speak(interaction: discord.Interaction, content: str):
     if not current_game.game_channel or interaction.channel_id != current_game.game_channel.id: return
+    if current_game.game_type == 'werewolf':
+        return await interaction.response.send_message("🐺 狼人殺請直接在頻道打字聊天即可。", ephemeral=True)
+    
     if current_game.phase != GamePhase.SPEAKING: return await interaction.response.send_message("❌ 非發言階段", ephemeral=True)
     if interaction.user not in current_game.alive_players: return await interaction.response.send_message("👻 你已出局", ephemeral=True)
-    
     current_player = current_game.alive_players[current_game.turn_index]
     if interaction.user != current_player: return await interaction.response.send_message(f"🤫 輪到 {current_player.mention}", ephemeral=True)
-
-    await interaction.response.defer() 
-
+    
+    await interaction.response.defer()
     if current_game.game_type == 'password':
         try:
             guess = int(content)
             low, high = current_game.password_range
             if not (low < guess < high): return await interaction.followup.send(f"⚠️ 請輸入 {low}~{high} 之間")
-            
             await interaction.followup.send(f"🗣️ {interaction.user.display_name} 猜：**{guess}**")
             if guess == current_game.password_number:
                 current_game.round_losers.append(interaction.user)
                 await current_game.game_channel.send(f"💥 **BOOM！** {interaction.user.mention} 踩到炸彈！數字是 {guess}！\n遊戲結束！")
                 current_game.phase = GamePhase.GAME_OVER
                 return
-            
             if guess < current_game.password_number: current_game.password_range[0] = guess
             else: current_game.password_range[1] = guess
             next_turn()
             await current_game.game_channel.send(f"範圍縮小：**{current_game.password_range[0]} ~ {current_game.password_range[1]}**\n換 {current_game.alive_players[current_game.turn_index].mention}")
         except ValueError: await interaction.followup.send("⚠️ 請輸入數字")
-
     elif current_game.game_type == 'spy':
         await interaction.followup.send(f"🗣️ {interaction.user.display_name}：**{content}**")
         if current_game.god_channel:
@@ -353,29 +524,29 @@ async def speak(interaction: discord.Interaction, content: str):
             if interaction.user == current_game.spy_player: role = "😈臥底"
             if interaction.user == current_game.whiteboard_player: role = "⬜白板"
             await current_game.god_channel.send(f"{role} {interaction.user.display_name}：{content}")
-
         if interaction.user not in current_game.spoken_players: current_game.spoken_players.append(interaction.user)
         if not current_game.voting_unlocked and len(current_game.spoken_players) >= len(current_game.alive_players):
             current_game.voting_unlocked = True
             await current_game.game_channel.send("✅ **第一輪結束，可開始投票！**")
-
         next_turn()
         await current_game.game_channel.send(f"換 {current_game.alive_players[current_game.turn_index].mention} 發言")
-
-# --- 投票系統 (單票制) ---
 
 @bot.tree.command(name="call_vote", description="發起投票 (限時5分鐘)")
 async def call_vote(interaction: discord.Interaction):
     if not current_game.game_channel or interaction.channel_id != current_game.game_channel.id: return
-    if current_game.game_type != 'spy': return
-    if not current_game.voting_unlocked: return await interaction.response.send_message("❌ 第一輪未結束", ephemeral=True)
     if current_game.phase == GamePhase.VOTING: return await interaction.response.send_message("⚠️ 投票進行中", ephemeral=True)
+    
+    if current_game.game_type == 'werewolf':
+        if current_game.phase != GamePhase.WEREWOLF_DAY:
+            return await interaction.response.send_message("❌ 只有白天可以投票", ephemeral=True)
+    elif current_game.game_type == 'spy':
+        if not current_game.voting_unlocked: return await interaction.response.send_message("❌ 第一輪未結束", ephemeral=True)
 
     current_game.phase = GamePhase.VOTING
     current_game.votes = {}
     await interaction.response.send_message(f"🗳️ {interaction.user.display_name} 發起投票！")
     current_game.voting_task = bot.loop.create_task(voting_timer())
-    await current_game.game_channel.send("📢 **投票開始！限時 5 分鐘！**\n請使用 `/vote <玩家>` 投出你覺得是壞人(臥底或白板)的人！")
+    await current_game.game_channel.send("📢 **投票開始！限時 5 分鐘！**\n請使用 `/vote <玩家>` 投出你想處決的人！")
 
 async def voting_timer():
     try:
@@ -392,7 +563,6 @@ async def vote(interaction: discord.Interaction, target: discord.Member):
     if interaction.user not in current_game.alive_players: return await interaction.response.send_message("👻 死人無法投票", ephemeral=True)
     if target not in current_game.alive_players: return await interaction.response.send_message("⚠️ 目標已出局", ephemeral=True)
 
-    # 記錄投票 (覆蓋舊票)
     current_game.votes[interaction.user] = target
     await interaction.response.send_message(f"🗳️ 你投給了 {target.display_name}。", ephemeral=True)
     await check_voting_progress()
@@ -405,107 +575,86 @@ async def check_voting_progress():
         if current_game.voting_task: current_game.voting_task.cancel()
         await process_voting_results_final()
 
-# --- 結算與垂死掙扎邏輯 (單票制版) ---
-
 async def process_voting_results_final():
-    """投票結束，計算最高票者並處決"""
     await current_game.game_channel.send("🛑 **投票截止！統計中...**")
     await asyncio.sleep(2)
 
     if not current_game.votes:
         await current_game.game_channel.send("⚠️ 無人投票，本局無人淘汰。")
-        await check_win_condition(from_voting=True)
+        if current_game.game_type == 'spy': await check_win_condition(from_voting=True)
+        elif current_game.game_type == 'werewolf': 
+            current_game.phase = GamePhase.WEREWOLF_DAY 
+            await current_game.game_channel.send("請主持人輸入 `/next_phase` 進入夜晚。")
         return
 
-    # 統計票數
     vote_counts = Counter(current_game.votes.values())
     most_voted_player, count = vote_counts.most_common(1)[0]
     
-    # 檢查平票
     if list(vote_counts.values()).count(count) > 1:
         await current_game.game_channel.send(f"⚖️ **平票！** (最高票數 {count})，無人被淘汰。")
-        await check_win_condition(from_voting=True)
+        if current_game.game_type == 'spy': await check_win_condition(from_voting=True)
+        elif current_game.game_type == 'werewolf': 
+            current_game.phase = GamePhase.WEREWOLF_DAY
+            await current_game.game_channel.send("請主持人輸入 `/next_phase` 進入夜晚。")
         return
 
     await current_game.game_channel.send(f"💀 **{most_voted_player.mention}** 以 {count} 票被處決了！")
     
-    # 處理被處決者的身分
-    real_wb = current_game.whiteboard_player
-    real_spy = current_game.spy_player
-    
-    if most_voted_player == real_wb:
-        # 白板被投死 -> 觸發垂死掙扎
-        await current_game.game_channel.send(f"🚨 **他是白板！**\n但還沒結束... **你有 30 秒的時間在聊天室輸入平民詞！**\n猜對直接獲勝！")
-        
-        def check_guess(m):
-            return m.author == real_wb and m.channel == current_game.game_channel
-
-        try:
-            msg = await bot.wait_for('message', check=check_guess, timeout=30.0)
-            if msg.content.strip() == current_game.civilian_word:
-                await current_game.game_channel.send(f"🎉 **白板猜對了！** 平民詞是 `{current_game.civilian_word}`！\n🏆 **白板逆轉獲勝！**")
-                current_game.phase = GamePhase.GAME_OVER
-                return 
-            else:
-                # 修正：如果臥底還活著，不公佈答案
-                spy_alive = current_game.spy_player in current_game.alive_players
-                if spy_alive:
-                    await current_game.game_channel.send(f"❌ **猜錯了！**\n💀 白板正式出局。\n(為防止劇透，暫不公佈平民詞)")
-                else:
-                    await current_game.game_channel.send(f"❌ **猜錯了！** (正確是 `{current_game.civilian_word}`)\n💀 白板正式出局。")
-
-        except asyncio.TimeoutError:
-            await current_game.game_channel.send("⏰ **時間到！** 白板放棄掙扎。\n💀 白板正式出局。")
-            
-    elif most_voted_player == real_spy:
-        await current_game.game_channel.send(f"🔫 **漂亮！** 你們抓到了一隻 **臥底**！")
-    else:
-        await current_game.game_channel.send(f"😭 **抓錯人了！** 他是無辜的 **平民**...")
-
-    # 移除玩家
     current_game.round_losers.append(most_voted_player)
     if most_voted_player in current_game.alive_players:
         current_game.alive_players.remove(most_voted_player)
 
-    # 檢查勝利條件
-    await check_win_condition(from_voting=True)
+    if current_game.game_type == 'spy':
+        real_wb = current_game.whiteboard_player
+        real_spy = current_game.spy_player
+        
+        if most_voted_player == real_wb:
+            await current_game.game_channel.send(f"🚨 **他是白板！**\n但還沒結束... **你有 30 秒的時間在聊天室輸入平民詞！**")
+            def check_guess(m): return m.author == real_wb and m.channel == current_game.game_channel
+            try:
+                msg = await bot.wait_for('message', check=check_guess, timeout=30.0)
+                if msg.content.strip() == current_game.civilian_word:
+                    await current_game.game_channel.send(f"🎉 **白板猜對了！** 平民詞是 `{current_game.civilian_word}`！\n🏆 **白板逆轉獲勝！**")
+                    current_game.phase = GamePhase.GAME_OVER
+                    return 
+                else:
+                    spy_alive = current_game.spy_player in current_game.alive_players
+                    if spy_alive: await current_game.game_channel.send(f"❌ **猜錯了！**\n💀 白板正式出局。")
+                    else: await current_game.game_channel.send(f"❌ **猜錯了！** (正確是 `{current_game.civilian_word}`)\n💀 白板正式出局。")
+            except asyncio.TimeoutError:
+                await current_game.game_channel.send("⏰ **時間到！** 白板放棄掙扎。\n💀 白板正式出局。")
+        elif most_voted_player == real_spy: await current_game.game_channel.send(f"🔫 **漂亮！** 你們抓到了一隻 **臥底**！")
+        else: await current_game.game_channel.send(f"😭 **抓錯人了！** 他是無辜的 **平民**...")
+        await check_win_condition(from_voting=True)
 
-# --- 勝利判定函式 ---
+    elif current_game.game_type == 'werewolf':
+        role = current_game.roles.get(most_voted_player)
+        await current_game.game_channel.send(f"他的身分是：**{role}**") 
+        await check_werewolf_win()
+        if current_game.phase != GamePhase.GAME_OVER:
+            current_game.phase = GamePhase.WEREWOLF_DAY
+            await current_game.game_channel.send("請主持人輸入 `/next_phase` 進入夜晚。")
 
 async def check_win_condition(from_voting=False):
-    """檢查遊戲是否結束"""
-    
     real_spy = current_game.spy_player
     real_wb = current_game.whiteboard_player
-    
     spy_dead = real_spy not in current_game.alive_players
     wb_dead = real_wb not in current_game.alive_players
-    
-    # 1. 平民勝利：壞人全滅
     if spy_dead and wb_dead:
         await current_game.game_channel.send(f"🎉 **臥底和白板都死了！**\n平民詞：`{current_game.civilian_word}`\n臥底詞：`{current_game.spy_word}`\n🏆 **平民陣營獲勝！**")
         current_game.phase = GamePhase.GAME_OVER
         return
-
-    # 2. 壞人勝利：壞人數 >= 平民數
     bad_guys_count = 0
     if not spy_dead: bad_guys_count += 1
     if not wb_dead: bad_guys_count += 1
-    
     civilians_count = len(current_game.alive_players) - bad_guys_count
-    
     if bad_guys_count >= civilians_count or civilians_count == 0:
         await current_game.game_channel.send("💀 **平民人數不足！壞人控場！**")
-        if not wb_dead:
-            await current_game.game_channel.send("🏆 **白板存活到最後，白板獲勝！**")
-        else:
-            await current_game.game_channel.send("🏆 **臥底獲勝！**")
-        
+        if not wb_dead: await current_game.game_channel.send("🏆 **白板存活到最後，白板獲勝！**")
+        else: await current_game.game_channel.send("🏆 **臥底獲勝！**")
         await current_game.game_channel.send(f"平民詞：`{current_game.civilian_word}`\n臥底詞：`{current_game.spy_word}`")
         current_game.phase = GamePhase.GAME_OVER
         return
-
-    # 3. 遊戲繼續
     if from_voting:
         current_game.phase = GamePhase.SPEAKING
         current_game.turn_index = 0 
@@ -513,41 +662,26 @@ async def check_win_condition(from_voting=False):
         if current_game.alive_players:
             await current_game.game_channel.send(f"現在輪到 {current_game.alive_players[0].mention} 發言。")
 
-# --- 搶答與踢人 ---
-
 @bot.tree.command(name="answer", description="臥底/白板搶答 (平民禁用)")
 async def answer(interaction: discord.Interaction, guess: str):
     if not current_game.game_channel or interaction.channel_id != current_game.game_channel.id: return
     if interaction.user not in current_game.alive_players: return await interaction.response.send_message("👻 你已出局", ephemeral=True)
-    
     is_spy = interaction.user == current_game.spy_player
     is_wb = interaction.user == current_game.whiteboard_player
     if not (is_spy or is_wb): return await interaction.response.send_message("❌ 平民不能搶答", ephemeral=True)
-
     await interaction.response.send_message(f"📢 {interaction.user.mention} 發起搶答：**{guess}**")
-    
     if guess.strip() == current_game.civilian_word:
         role = "臥底" if is_spy else "白板"
         await current_game.game_channel.send(f"🎉 **猜對了！** {role} 猜到了平民詞！\n🏆 **壞人陣營獲勝！**")
         current_game.phase = GamePhase.GAME_OVER
     else:
-        # 修正：猜錯不公佈答案，防止劇透
         await current_game.game_channel.send(f"🚫 **猜錯！** {interaction.user.mention} 自殺出局。")
         current_game.round_losers.append(interaction.user)
         current_game.alive_players.remove(interaction.user)
-        
-        if interaction.user in current_game.votes:
-            del current_game.votes[interaction.user]
-        
-        # 檢查是否結束，如果沒結束，需要確保遊戲流程繼續
+        if interaction.user in current_game.votes: del current_game.votes[interaction.user]
         await check_win_condition(from_voting=False)
-        
-        # 修正：如果遊戲沒結束，需要明確提示下一位，防止卡住
         if current_game.phase != GamePhase.GAME_OVER:
-            if current_game.turn_index >= len(current_game.alive_players):
-                 current_game.turn_index = 0
-            
-            # 提示下一位發言者
+            if current_game.turn_index >= len(current_game.alive_players): current_game.turn_index = 0
             next_player = current_game.alive_players[current_game.turn_index]
             await current_game.game_channel.send(f"🔄 遊戲繼續！下一位發言：{next_player.mention}")
 
@@ -555,11 +689,9 @@ async def answer(interaction: discord.Interaction, guess: str):
 async def kick_player(interaction: discord.Interaction, target: discord.Member):
     if interaction.user != current_game.host: return await interaction.response.send_message("❌ 限主持人", ephemeral=True)
     if target not in current_game.alive_players: return await interaction.response.send_message("⚠️ 玩家不在名單", ephemeral=True)
-    
     current_speaker = current_game.alive_players[current_game.turn_index]
     current_game.alive_players.remove(target)
     if target in current_game.players: current_game.players.remove(target)
-    
     msg = f"👢 **{target.display_name}** 被踢出！"
     if current_game.phase == GamePhase.SPEAKING:
         if target in current_game.spoken_players: current_game.spoken_players.remove(target)
@@ -575,7 +707,6 @@ async def kick_player(interaction: discord.Interaction, target: discord.Member):
         await interaction.response.send_message(msg)
         await check_voting_progress()
         return
-
     await interaction.response.send_message(msg)
     if len(current_game.alive_players) < 2:
         await current_game.game_channel.send("⚠️ 人數不足，結束")
@@ -591,12 +722,12 @@ async def pass_turn(interaction: discord.Interaction):
 async def restart(interaction: discord.Interaction):
     if interaction.user != current_game.host: return
     if current_game.voting_task: current_game.voting_task.cancel()
-    
     msg = "🔄 **重新洗牌...**"
     if current_game.round_losers: msg += f"\n💀 上局輸家：{', '.join([p.display_name for p in current_game.round_losers])}"
     await interaction.response.send_message(msg)
-    
-    min_p = 4 if current_game.game_type == 'spy' else 2
+    min_p = 2
+    if current_game.game_type == 'spy': min_p = 4
+    if current_game.game_type == 'werewolf': min_p = 6
     if len(current_game.players) < min_p: return await current_game.game_channel.send("⚠️ 人數不足")
     await init_game_logic()
 
@@ -612,7 +743,6 @@ async def on_message(message):
             current_game.players.append(message.author)
             await message.add_reaction("✅")
         return
-    
     if current_game.phase == GamePhase.WAITING_FOR_HOST_INPUT and message.channel == current_game.god_channel and message.author == current_game.host:
         parts = message.content.strip().split()
         if len(parts) == 2:
@@ -620,11 +750,7 @@ async def on_message(message):
             await start_spy_round((parts[0], parts[1]))
         else: await message.channel.send("⚠️ 格式錯：`詞1 詞2`")
         return
-
     await bot.process_commands(message)
 
-# ==========================================
-# 🚀 啟動機器人 (使用環境變數)
-# ==========================================
-keep_alive() # 啟動防休眠網站
-bot.run(os.getenv('DISCORD_TOKEN')) # 從環境變數讀取 Token
+keep_alive()
+bot.run(os.getenv('DISCORD_TOKEN'))
