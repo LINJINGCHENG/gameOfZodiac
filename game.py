@@ -666,24 +666,54 @@ async def check_win_condition(from_voting=False):
 async def answer(interaction: discord.Interaction, guess: str):
     if not current_game.game_channel or interaction.channel_id != current_game.game_channel.id: return
     if interaction.user not in current_game.alive_players: return await interaction.response.send_message("👻 你已出局", ephemeral=True)
+    
     is_spy = interaction.user == current_game.spy_player
     is_wb = interaction.user == current_game.whiteboard_player
-    if not (is_spy or is_wb): return await interaction.response.send_message("❌ 平民不能搶答", ephemeral=True)
+    
+    if not (is_spy or is_wb): 
+        return await interaction.response.send_message("❌ 平民不能搶答", ephemeral=True)
+    
     await interaction.response.send_message(f"📢 {interaction.user.mention} 發起搶答：**{guess}**")
+    
+    # 猜對的情況
     if guess.strip() == current_game.civilian_word:
         role = "臥底" if is_spy else "白板"
         await current_game.game_channel.send(f"🎉 **猜對了！** {role} 猜到了平民詞！\n🏆 **壞人陣營獲勝！**")
         current_game.phase = GamePhase.GAME_OVER
+    
+    # 猜錯的情況 (自殺)
     else:
+        # 1. 先記錄現在是誰在發言
+        current_speaker = current_game.alive_players[current_game.turn_index]
+        
         await current_game.game_channel.send(f"🚫 **猜錯！** {interaction.user.mention} 自殺出局。")
         current_game.round_losers.append(interaction.user)
         current_game.alive_players.remove(interaction.user)
+        
         if interaction.user in current_game.votes: del current_game.votes[interaction.user]
+        
         await check_win_condition(from_voting=False)
+        
+        # 如果遊戲還沒結束，處理發言順序
         if current_game.phase != GamePhase.GAME_OVER:
-            if current_game.turn_index >= len(current_game.alive_players): current_game.turn_index = 0
-            next_player = current_game.alive_players[current_game.turn_index]
-            await current_game.game_channel.send(f"🔄 遊戲繼續！下一位發言：{next_player.mention}")
+            # 情況 A: 自殺的人就是正在發言的人 -> 換下一個人
+            if interaction.user == current_speaker:
+                if current_game.turn_index >= len(current_game.alive_players): 
+                    current_game.turn_index = 0
+                next_player = current_game.alive_players[current_game.turn_index]
+                await current_game.game_channel.send(f"🔄 發言者自爆！換 {next_player.mention} 發言")
+            
+            # 情況 B: 自殺的是別人 -> 發言者不變，但需要更新他的索引位置
+            else:
+                try:
+                    # 重新找到發言者在列表中的新位置
+                    current_game.turn_index = current_game.alive_players.index(current_speaker)
+                    await current_game.game_channel.send(f"🔄 遊戲繼續！依然是 {current_speaker.mention} 發言")
+                except ValueError:
+                    # 萬一發生錯誤 (理論上不會)，重置為第一個人
+                    current_game.turn_index = 0
+                    await current_game.game_channel.send(f"⚠️ 順序重置，換 {current_game.alive_players[0].mention} 發言")
+
 
 @bot.tree.command(name="kick_player", description="踢人")
 async def kick_player(interaction: discord.Interaction, target: discord.Member):
