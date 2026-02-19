@@ -127,12 +127,28 @@ async def on_ready():
     print('-------------------------------------------')
 
 @bot.command()
-async def sync(ctx):
-    await ctx.send(f"🔄 正在同步指令...")
-    ctx.bot.tree.clear_commands(guild=ctx.guild)
-    ctx.bot.tree.copy_global_to(guild=ctx.guild)
-    synced = await ctx.bot.tree.sync(guild=ctx.guild)
-    await ctx.send(f"✅ 成功同步 {len(synced)} 個指令！")
+async def sync(ctx, action: str = None):
+    """
+    指令同步工具
+    !sync -> 同步目前伺服器 (開發用，最快)
+    !sync clear -> 清除「全域」舊指令 (解決舊指令刪不掉的問題)
+    """
+    if action == "clear":
+        await ctx.send("🧹 正在清除所有「全域」指令 (可能需要一點時間生效)...")
+        # 清除全域指令
+        ctx.bot.tree.clear_commands(guild=None)
+        await ctx.bot.tree.sync(guild=None)
+        await ctx.send("✅ 全域指令已清除！請稍等 Discord 更新列表 (最多可能需 1 小時)。")
+    else:
+        await ctx.send(f"🔄 正在同步此伺服器指令...")
+        # 1. 先清除此伺服器的舊指令
+        ctx.bot.tree.clear_commands(guild=ctx.guild)
+        # 2. 把程式碼中的指令複製過來
+        ctx.bot.tree.copy_global_to(guild=ctx.guild)
+        # 3. 同步
+        synced = await ctx.bot.tree.sync(guild=ctx.guild)
+        await ctx.send(f"✅ 成功同步 {len(synced)} 個指令到本伺服器！(立即生效)")
+
 
 # --- 第一階段：大廳與加入 ---
 
