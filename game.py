@@ -34,7 +34,7 @@ intents.members = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-# --- 詞庫設定 (全域變數) ---
+# --- 詞庫設定 (全域變數) - 高難度版 ---
 SPY_WORDS_DATA = [
     # 🔥 陷阱題：外觀或動作相似，但後果不同
     ("牙刷", "馬桶刷"), ("雨傘", "降落傘"), ("口香糖", "保險套"),
@@ -64,7 +64,6 @@ SPY_WORDS_DATA = [
     ("臉書", "日記"), ("手機", "對講機"), ("眼鏡", "放大鏡"),
     ("電梯", "手扶梯"), ("斑馬線", "起跑線"), ("監獄", "學校")
 ]
-
 
 # 遊戲狀態 Enum
 class GamePhase:
@@ -122,33 +121,36 @@ ALLOWED_CHANNEL_ID = 1472525156336275476
 @bot.event
 async def on_ready():
     print(f'Bot 已登入: {bot.user}')
+    # 這裡會顯示機器人目前載入了幾個指令
+    print(f'目前載入的全域指令數量: {len(bot.tree.get_commands())}')
     print('-------------------------------------------')
     print('⚠️ 請務必在 Discord 頻道輸入 !sync 來載入指令！')
     print('-------------------------------------------')
 
+# --- 🛠️ 修復後的同步指令 ---
 @bot.command()
-async def sync(ctx, action: str = None):
+async def sync(ctx):
     """
-    指令同步工具
-    !sync -> 同步目前伺服器 (開發用，最快)
-    !sync clear -> 清除「全域」舊指令 (解決舊指令刪不掉的問題)
+    強制同步指令到目前伺服器 (立即生效)
     """
-    if action == "clear":
-        await ctx.send("🧹 正在清除所有「全域」指令 (可能需要一點時間生效)...")
-        # 清除全域指令
-        ctx.bot.tree.clear_commands(guild=None)
-        await ctx.bot.tree.sync(guild=None)
-        await ctx.send("✅ 全域指令已清除！請稍等 Discord 更新列表 (最多可能需 1 小時)。")
-    else:
-        await ctx.send(f"🔄 正在同步此伺服器指令...")
-        # 1. 先清除此伺服器的舊指令
-        ctx.bot.tree.clear_commands(guild=ctx.guild)
-        # 2. 把程式碼中的指令複製過來
-        ctx.bot.tree.copy_global_to(guild=ctx.guild)
-        # 3. 同步
-        synced = await ctx.bot.tree.sync(guild=ctx.guild)
-        await ctx.send(f"✅ 成功同步 {len(synced)} 個指令到本伺服器！(立即生效)")
+    # 先檢查機器人腦袋裡有沒有指令
+    commands_count = len(bot.tree.get_commands())
+    await ctx.send(f"🔍 檢測到機器人擁有 {commands_count} 個指令，正在同步...")
 
+    if commands_count == 0:
+        await ctx.send("⚠️ 警告：機器人目前沒有載入任何指令！請檢查程式碼是否正確。")
+        return
+    
+    # 1. 先清除這個伺服器的舊設定
+    ctx.bot.tree.clear_commands(guild=ctx.guild)
+    
+    # 2. 把程式碼裡的全域指令，複製一份給這個伺服器
+    ctx.bot.tree.copy_global_to(guild=ctx.guild)
+    
+    # 3. 執行同步
+    synced = await ctx.bot.tree.sync(guild=ctx.guild)
+    
+    await ctx.send(f"✅ 已成功同步 {len(synced)} 個指令到本伺服器！\n(請輸入 / 測試看看)")
 
 # --- 第一階段：大廳與加入 ---
 
@@ -239,7 +241,6 @@ async def start(interaction: discord.Interaction):
             current_game.god_channel = None
 
         if current_game.game_type == 'werewolf':
-            # 修正：不把主持人加入狼人頻道
             wolf_overwrites = {
                 guild.default_role: discord.PermissionOverwrite(read_messages=False),
                 guild.me: discord.PermissionOverwrite(read_messages=True)
@@ -429,7 +430,6 @@ async def wolf_kill(interaction: discord.Interaction, target: discord.Member):
     if current_game.god_channel:
         await current_game.god_channel.send(f"🔪 狼人想殺：{target.display_name}")
 
-    # 修正：自動私訊女巫
     witch = None
     for p, r in current_game.roles.items():
         if r == "女巫" and p in current_game.alive_players:
@@ -678,6 +678,7 @@ async def check_win_condition(from_voting=False):
         if current_game.alive_players:
             await current_game.game_channel.send(f"現在輪到 {current_game.alive_players[0].mention} 發言。")
 
+# --- 🛠️ 修復後的搶答指令 ---
 @bot.tree.command(name="answer", description="臥底/白板搶答 (平民禁用)")
 async def answer(interaction: discord.Interaction, guess: str):
     if not current_game.game_channel or interaction.channel_id != current_game.game_channel.id: return
@@ -729,7 +730,6 @@ async def answer(interaction: discord.Interaction, guess: str):
                     # 萬一發生錯誤 (理論上不會)，重置為第一個人
                     current_game.turn_index = 0
                     await current_game.game_channel.send(f"⚠️ 順序重置，換 {current_game.alive_players[0].mention} 發言")
-
 
 @bot.tree.command(name="kick_player", description="踢人")
 async def kick_player(interaction: discord.Interaction, target: discord.Member):
